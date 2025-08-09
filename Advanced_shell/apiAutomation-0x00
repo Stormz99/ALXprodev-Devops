@@ -1,4 +1,13 @@
 #!/bin/bash
-if ! curl -s https://pokeapi.co/api/v2/pokemon/pikachu -o data.json; then
-    echo "Failed to fetch Pikachu data" >> errors.txt
+set -euo pipefail
+API_URL="https://pokeapi.co/api/v2/pokemon/pikachu"
+OUT="data.json"
+ERR="errors.txt"
+if ! curl -sfS "$API_URL" -o "$OUT"; then
+  echo "Failed to fetch $API_URL" >> "$ERR"
+  exit 1
+fi
+if ! jq -e . "$OUT" >/dev/null 2>&1; then
+  echo "Invalid JSON saved to $OUT" >> "$ERR"
+  exit 1
 fi

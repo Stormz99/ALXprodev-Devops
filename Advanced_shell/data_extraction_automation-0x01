@@ -1,0 +1,17 @@
+#!/bin/bash
+set -euo pipefail
+FILE="data.json"
+[ -f "$FILE" ] || { echo "$FILE not found" >&2; exit 1; }
+jq -r '.name // "", .types[0].type.name // "", .height // 0, .weight // 0' "$FILE" | \
+awk 'NR==1{n=$0} NR==2{t=$0} NR==3{h=$0} NR==4{w=$0}
+END{
+ if(n=="") n="Unknown"; if(t=="") t="Unknown";
+ # capitalize first character
+ n = toupper(substr(n,1,1)) substr(n,2);
+ t = toupper(substr(t,1,1)) substr(t,2);
+ h_m = h/10;
+ w_kg = w/10;
+ # make weight display without trailing .0 when integer
+ if (w_kg == int(w_kg)) wfmt = sprintf("%.0f", w_kg); else wfmt = sprintf("%g", w_kg);
+ printf "%s is of type %s, weighs %skg, and is %.1fm tall.\n", n, t, wfmt, h_m
+}'
