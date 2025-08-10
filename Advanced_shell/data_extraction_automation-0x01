@@ -1,15 +1,17 @@
 #!/bin/bash
+if [ ! -s "$0" ]; then
+  echo "Error: Script is empty or missing."
+  exit 1
+fi
 
-capitalize() {
-  echo "$1" | awk '{ print toupper(substr($0,1,1)) tolower(substr($0,2)) }'
-}
+if [ ! -f data.json ]; then
+  echo "Error: data.json not found."
+  exit 1
+fi
 
-name=$(jq -r '.name' pokemon.json | capitalize)
-height=$(jq -r '.height' pokemon.json)
-weight=$(jq -r '.weight' pokemon.json)
-type=$(jq -r '.types[0].type.name' pokemon.json | capitalize)
+name=$(jq -r '.name' data.json | sed 's/.*/\u&/')
+formatted_height=$(jq -r '.height' data.json | awk '{printf "%.1f", $1 / 10}')
+formatted_weight=$(jq -r '.weight' data.json | awk '{printf "%.0f", $1 / 10}')
+type=$(jq -r '.types[0].type.name' data.json | sed 's/.*/\u&/')
 
-formatted_height=$(awk "BEGIN {printf \"%.1f\", $height / 10}")
-formatted_weight=$(awk "BEGIN {printf \"%d\", $weight / 10}")
-
-echo "${name} is of type ${type}, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
+echo "$name is of type $type, weighs ${formatted_weight}kg, and is ${formatted_height}m tall."
