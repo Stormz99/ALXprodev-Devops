@@ -16,7 +16,7 @@ for POKEMON in "${POKEMONS[@]}"; do
     RESPONSE=$(curl -s -f "$API_BASE_URL/$POKEMON" -o "$OUTPUT_DIR/$POKEMON.json")
 
     if [ $? -eq 0 ]; then
-      echo "Saved data to $OUTPUT_DIR/$POKEMON.json ✅"
+      echo "Saved data to $OUTPUT_DIR/$POKEMON.json"
       SUCCESS=true
       break
     else
